@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Users.php
  * Users
@@ -11,14 +12,12 @@
  * @license     MIT - https://github.com/NDN/phalcon-angular-harryhogfootball/blob/master/LICENSE
  *
  */
-
 class Users extends \NDN\Model
 {
-    /**
-     * Initializes the class and sets any relationships with other models
-     */
-    public function initialize()
-    {
-        $this->hasMany('id', 'Awards', 'user_id');
-    }
+  /**
+   * Initializes the class and sets any relationships with other models
+   */
+  public function initialize() {
+    $this->hasMany('id', 'Awards', 'user_id');
+  }
 }

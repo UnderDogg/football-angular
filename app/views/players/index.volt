@@ -27,8 +27,8 @@
                 </span>
             </td>
             {% if (addButton) %}
-            <td width='1%'><a href='/players/edit/[[player.id]]'><i class='icon-pencil'></i></a></td>
-            <td width='1%'><a href='/players/delete/[[player.id]]'><i class='icon-remove'></i></a></td>
+                <td width='1%'><a href='/players/edit/[[player.id]]'><i class='icon-pencil'></i></a></td>
+                <td width='1%'><a href='/players/delete/[[player.id]]'><i class='icon-remove'></i></a></td>
             {% endif %}
         </tr>
         </tbody>

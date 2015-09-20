@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Awards.php
  * Scoring
@@ -11,17 +12,15 @@
  * @license     MIT - https://github.com/NDN/phalcon-angular-harryhogfootball/blob/master/LICENSE
  *
  */
-
 class Awards extends \NDN\Model
 {
-    /**
-     * Initializes the class and sets any relationships with other models
-     */
-    public function initialize()
-    {
-        $this->addBehavior('Timestamp');
-        $this->belongsTo('episode_id', 'Episodes', 'id');
-        $this->belongsTo('player_id', 'Players', 'id');
-        $this->belongsTo('user_id', 'Users', 'id');
-    }
+  /**
+   * Initializes the class and sets any relationships with other models
+   */
+  public function initialize() {
+    $this->addBehavior('Timestamp');
+    $this->belongsTo('episode_id', 'Episodes', 'id');
+    $this->belongsTo('player_id', 'Players', 'id');
+    $this->belongsTo('user_id', 'Users', 'id');
+  }
 }

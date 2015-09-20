@@ -7,6 +7,7 @@
                 <span class='icon-bar'></span>
             </a>
             <a class='brand' href='/'>HHF GKB Awards</a>
+
             <div class='nav-collapse'>
                 <ul class='nav pull-left'>
                     {% for menu in menus['left'] %}

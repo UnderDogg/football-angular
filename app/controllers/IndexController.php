@@ -16,17 +16,15 @@ use \Phalcon\Tag as Tag;
 
 class IndexController extends \NDN\Controller
 {
-    public function initialize()
-    {
-        Tag::setTitle('Welcome');
-        parent::initialize();
-        $this->view->setVar('menus', $this->constructMenu($this));
-    }
+  public function initialize() {
+    Tag::setTitle('Welcome');
+    parent::initialize();
+    $this->view->setVar('menus', $this->constructMenu($this));
+  }
 
-    /**
-     * index Action
-     */
-    public function indexAction()
-    {
-    }
+  /**
+   * index Action
+   */
+  public function indexAction() {
+  }
 }

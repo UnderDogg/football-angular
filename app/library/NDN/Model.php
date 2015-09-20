@@ -19,51 +19,45 @@ use \Phalcon\DI\FactoryDefault as Di;
 
 class Model extends \Phalcon\Mvc\Model
 {
-    protected $behaviors = array();
+  protected $behaviors = array();
 
-    /**
-     * Adds a behavior in the model
-     *
-     * @param $behavior
-     */
-    public function addBehavior($behavior)
-    {
-        $this->behaviors[$behavior] = true;
+  /**
+   * Adds a behavior in the model
+   *
+   * @param $behavior
+   */
+  public function addBehavior($behavior) {
+    $this->behaviors[$behavior] = true;
+  }
+
+  public function beforeSave() {
+    $path = dirname(__FILE__);
+    $di = Di::getDefault();
+
+    foreach ($this->behaviors as $behavior => $active) {
+      if ($active && $di->has($behavior)) {
+        $di->get($behavior)->beforeSave($this);
+      }
     }
+  }
 
-    public function beforeSave()
-    {
-        $path = dirname(__FILE__);
-        $di   = Di::getDefault();
+  /**
+   * @param array $parameters
+   *
+   * @static
+   * @return Phalcon_Model_Resultset Model[]
+   */
+  static public function find($parameters = array()) {
+    return parent::find($parameters);
+  }
 
-        foreach ($this->behaviors as $behavior => $active)
-        {
-            if ($active && $di->has($behavior))
-            {
-                $di->get($behavior)->beforeSave($this);
-            }
-        }
-    }
-
-    /**
-     * @param array $parameters
-     *
-     * @static
-     * @return Phalcon_Model_Resultset Model[]
-     */
-    static public function find($parameters = array())
-    {
-        return parent::find($parameters);
-    }
-
-    /**
-     * @param array $parameters
-     *
-     * @static
-     * @return  Phalcon_Model_Base   Models
-     */
-    static public function findFirst($parameters = array())
-    {
-        return parent::findFirst($parameters);
-    }
+  /**
+   * @param array $parameters
+   *
+   * @static
+   * @return  Phalcon_Model_Base   Models
+   */
+  static public function findFirst($parameters = array()) {
+    return parent::findFirst($parameters);
+  }
 }

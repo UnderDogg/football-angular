@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Players.php
  * Players
@@ -11,15 +12,13 @@
  * @license     MIT - https://github.com/NDN/phalcon-angular-harryhogfootball/blob/master/LICENSE
  *
  */
-
 class Players extends \NDN\Model
 {
-    /**
-     * Initializes the class and sets any relationships with other models
-     */
-    public function initialize()
-    {
-        $this->addBehavior('Timestamp');
-        $this->hasMany('id', 'Awards', 'player_id');
-    }
+  /**
+   * Initializes the class and sets any relationships with other models
+   */
+  public function initialize() {
+    $this->addBehavior('Timestamp');
+    $this->hasMany('id', 'Awards', 'player_id');
+  }
 }

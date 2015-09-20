@@ -9,6 +9,7 @@
     {{ hidden_field('id', 'value': id) }}
     <div class='control-group'>
         <label class='control-label'>Name</label>
+
         <div class='controls'>
             {{ text_field('name', 'class': 'input-xlarge') }}
             <p class='help-block'>(required)</p>
@@ -16,6 +17,7 @@
     </div>
     <div class='control-group'>
         <label class='control-label'>Active</label>
+
         <div class='controls'>
             {{ select_static('active', ['0': '', '1': 'Yes', '2': 'No'], 'class': 'input-xlarge') }}
             <p class='help-block'>(required)</p>

@@ -16,16 +16,14 @@ use \Phalcon\Tag as Tag;
 
 class AboutController extends \NDN\Controller
 {
-    public function initialize()
-    {
-        Tag::setTitle('About');
-        parent::initialize();
+  public function initialize() {
+    Tag::setTitle('About');
+    parent::initialize();
 
-        $this->_bc->add('About', 'about');
-        $this->view->setVar('menus', $this->constructMenu($this));
-    }
+    $this->_bc->add('About', 'about');
+    $this->view->setVar('menus', $this->constructMenu($this));
+  }
 
-    public function indexAction()
-    {
-    }
+  public function indexAction() {
+  }
 }

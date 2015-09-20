@@ -16,93 +16,88 @@ use \Phalcon\Tag as Tag;
 
 class SessionController extends \NDN\Controller
 {
-    /**
-     * Initializes the controller
-     */
-    public function initialize()
-    {
-        Tag::setTitle('Log In');
-        parent::initialize();
-        $this->view->setVar('menus', $this->constructMenu($this));
+  /**
+   * Initializes the controller
+   */
+  public function initialize() {
+    Tag::setTitle('Log In');
+    parent::initialize();
+    $this->view->setVar('menus', $this->constructMenu($this));
+  }
+
+  /**
+   * The index action
+   */
+  public function indexAction() {
+    if (!$this->request->isPost()) {
+      Tag::setDefault('username', 'user@email.com');
+      Tag::setDefault('password', 'hhf');
     }
+  }
 
-    /**
-     * The index action
-     */
-    public function indexAction()
-    {
-        if (!$this->request->isPost()) {
-            Tag::setDefault('username', 'user@email.com');
-            Tag::setDefault('password', 'hhf');
-        }
-    }
+  /**
+   * This actions receives the input from the login form
+   *
+   */
+  public function loginAction() {
+    $this->view->disable();
 
-    /**
-     * This actions receives the input from the login form
-     *
-     */
-    public function loginAction()
-    {
-        $this->view->disable();
+    if ($this->request->isPost()) {
 
-        if ($this->request->isPost()) {
+      $username = $this->request->getPost('username', 'email');
+      $password = $this->request->getPost('password');
 
-            $username = $this->request->getPost('username', 'email');
-            $password = $this->request->getPost('password');
+      $password = sha1($password);
 
-            $password = sha1($password);
+      $conditions = 'username = :username: AND password = :password:';
+      $parameters = array(
+        'username' => $username,
+        'password' => $password,
+      );
+      $user = Users::findFirst(array($conditions, 'bind' => $parameters));
 
-            $conditions = 'username = :username: AND password = :password:';
-            $parameters = array(
-                            'username' => $username,
-                            'password' => $password,
-                          );
-            $user = Users::findFirst(array($conditions, 'bind' => $parameters));
+      if ($user != false) {
 
-            if ($user != false) {
-
-                $this->registerSession($user);
-                $this->flash->success('Welcome ' . $user->name);
-
-                return $this->response->redirect('');
-            }
-
-            $this->flash->error('Wrong username/password combination');
-        }
+        $this->registerSession($user);
+        $this->flash->success('Welcome ' . $user->name);
 
         return $this->response->redirect('');
+      }
+
+      $this->flash->error('Wrong username/password combination');
     }
 
-    /**
-     * Finishes the active session redirecting to the index
-     *
-     * @return unknown
-     */
-    public function logoutAction()
-    {
-        $this->view->disable();
+    return $this->response->redirect('');
+  }
 
-        $this->session->remove('auth');
-        $this->flash->success('You are now logged out.');
+  /**
+   * Finishes the active session redirecting to the index
+   *
+   * @return unknown
+   */
+  public function logoutAction() {
+    $this->view->disable();
 
-        return $this->response->redirect('');
-    }
+    $this->session->remove('auth');
+    $this->flash->success('You are now logged out.');
 
-    /**
-     * Register authenticated user into session data
-     *
-     * @param Users $user
-     */
-    private function registerSession($user)
-    {
-        $this->session->set(
-            'auth',
-            array(
-                'id'       => $user->id,
-                'username' => $user->username,
-                'name'     => $user->name,
-            )
-        );
-    }
+    return $this->response->redirect('');
+  }
+
+  /**
+   * Register authenticated user into session data
+   *
+   * @param Users $user
+   */
+  private function registerSession($user) {
+    $this->session->set(
+      'auth',
+      array(
+        'id'       => $user->id,
+        'username' => $user->username,
+        'name'     => $user->name,
+      )
+    );
+  }
 
 }

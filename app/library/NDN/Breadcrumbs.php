@@ -16,57 +16,53 @@ namespace NDN;
 
 class Breadcrumbs
 {
-    /**
-     * @var array
-     */
-    private $_elements = array();
+  /**
+   * @var array
+   */
+  private $_elements = array();
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->_elements[] = array(
-            'active' => false,
-            'link'   => '/',
-            'text'   => 'Home',
-        );
-    }
+  /**
+   * Constructor
+   */
+  public function __construct() {
+    $this->_elements[] = array(
+      'active' => false,
+      'link'   => '/',
+      'text'   => 'Home',
+    );
+  }
 
-    /**
-     * Adds a new element in the stack
-     *
-     * @param string $caption
-     * @param string $link
-     */
-    public function add($caption, $link)
-    {
-        $this->_elements[] = array(
-            'active' => false,
-            'link'   => '/' . $link,
-            'text'   => $caption,
-        );
-    }
+  /**
+   * Adds a new element in the stack
+   *
+   * @param string $caption
+   * @param string $link
+   */
+  public function add($caption, $link) {
+    $this->_elements[] = array(
+      'active' => false,
+      'link'   => '/' . $link,
+      'text'   => $caption,
+    );
+  }
 
-    /**
-     * Resets the internal element array
-     */
-    public function reset()
-    {
-        $this->_elements = array();
-    }
+  /**
+   * Resets the internal element array
+   */
+  public function reset() {
+    $this->_elements = array();
+  }
 
-    /**
-     * Generates the JSON string from the internal array
-     *
-     * @return string
-     */
-    public function generate()
-    {
-        $lastKey = key(array_slice($this->_elements, -1, 1, true));
+  /**
+   * Generates the JSON string from the internal array
+   *
+   * @return string
+   */
+  public function generate() {
+    $lastKey = key(array_slice($this->_elements, -1, 1, true));
 
-        $this->_elements[$lastKey]['active'] = true;
+    $this->_elements[$lastKey]['active'] = true;
 
-        return $this->_elements;
-    }
+    return $this->_elements;
+  }
 }

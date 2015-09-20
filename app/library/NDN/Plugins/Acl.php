@@ -26,118 +26,111 @@ use \Phalcon\Mvc\Dispatcher as PhDispatcher;
 class Acl extends Plugin
 {
 
-    /**
-     * @var Phalcon\Acl\Adapter\Memory
-     */
-    protected $_acl;
+  /**
+   * @var Phalcon\Acl\Adapter\Memory
+   */
+  protected $_acl;
 
-    public function __construct($di)
-    {
-        $this->_dependencyInjector = $di;
+  public function __construct($di) {
+    $this->_dependencyInjector = $di;
+  }
+
+  public function getAcl() {
+    if (!$this->_acl) {
+      $acl = new Memory();
+
+      $acl->setDefaultAction(PhAcl::DENY);
+
+      // Register roles
+      $roles = array(
+        'administrators'  => new PhRole('Administrators'),
+        'users'  => new PhRole('Users'),
+        'guests' => new PhRole('Guests')
+      );
+      foreach ($roles as $role) {
+        $acl->addRole($role);
+      }
+
+      // Private area resources
+      $privateResources = array(
+        'awards'   => array('add', 'edit', 'delete'),
+        'players'  => array('add', 'edit', 'delete'),
+        'episodes' => array('add', 'edit', 'delete'),
+      );
+
+      foreach ($privateResources as $resource => $actions) {
+        $acl->addResource(new PhResource($resource), $actions);
+      }
+
+      // Public area resources
+      $publicResources = array(
+        'index'    => array('index'),
+        'about'    => array('index'),
+        'awards'   => array('index'),
+        'players'  => array('index'),
+        'episodes' => array('index'),
+        'session'  => array('index', 'start'),
+        'contact'  => array('index', 'send')
+      );
+
+      foreach ($publicResources as $resource => $actions) {
+        $acl->addResource(new PhResource($resource), $actions);
+      }
+
+      //Grant access to public areas to both users and guests
+      foreach ($roles as $role) {
+        foreach ($publicResources as $resource => $actions) {
+          $acl->allow($role->getName(), $resource, '*');
+        }
+      }
+
+      // Grant access to private area to role Users
+      foreach ($privateResources as $resource => $actions) {
+        foreach ($actions as $action) {
+          $acl->allow('Administrators', $resource, $action);
+          $acl->allow('Users', $resource, $action);
+        }
+      }
+
+      $this->_acl = $acl;
     }
 
-    public function getAcl()
-    {
-        if (!$this->_acl)
-        {
-            $acl = new Memory();
+    return $this->_acl;
+  }
 
-            $acl->setDefaultAction(PhAcl::DENY);
+  /**
+   * This action is executed before execute any action in the application
+   */
+  public function beforeDispatch(PhEvent $event, PhDispatcher $dispatcher) {
 
-            // Register roles
-            $roles = array(
-                'users' => new PhRole('Users'),
-                'guests' => new PhRole('Guests')
-            );
-            foreach($roles as $role){
-                $acl->addRole($role);
-            }
-
-            // Private area resources
-            $privateResources = array(
-                'awards'   => array('add', 'edit', 'delete'),
-                'players'  => array('add', 'edit', 'delete'),
-                'episodes' => array('add', 'edit', 'delete'),
-            );
-
-            foreach ($privateResources as $resource => $actions)
-            {
-                $acl->addResource(new PhResource($resource), $actions);
-            }
-
-            // Public area resources
-            $publicResources = array(
-                'index'    => array('index'),
-                'about'    => array('index'),
-                'awards'   => array('index'),
-                'players'  => array('index'),
-                'episodes' => array('index'),
-                'session'  => array('index', 'start'),
-                'contact'  => array('index', 'send')
-            );
-
-            foreach ($publicResources as $resource => $actions)
-            {
-                $acl->addResource(new PhResource($resource), $actions);
-            }
-
-            //Grant access to public areas to both users and guests
-            foreach ($roles as $role)
-            {
-                foreach ($publicResources as $resource => $actions)
-                {
-                    $acl->allow($role->getName(), $resource, '*');
-                }
-            }
-
-            // Grant access to private area to role Users
-            foreach ($privateResources as $resource => $actions)
-            {
-                foreach ($actions as $action)
-                {
-                    $acl->allow('Users', $resource, $action);
-                }
-            }
-
-            $this->_acl = $acl;
-        }
-        return $this->_acl;
+    $auth = $this->session->get('auth');
+    if (!$auth) {
+      $role = 'Guests';
+    } else {
+      $role = 'Users';
     }
 
-    /**
-     * This action is executed before execute any action in the application
-     */
-    public function beforeDispatch(PhEvent $event, PhDispatcher $dispatcher)
-    {
+    $controller = $dispatcher->getControllerName();
+    $action = $dispatcher->getActionName();
 
-        $auth = $this->session->get('auth');
-        if (!$auth)
-        {
-            $role = 'Guests';
-        }
-        else
-        {
-            $role = 'Users';
-        }
+    $acl = $this->getAcl();
 
-        $controller = $dispatcher->getControllerName();
-        $action     = $dispatcher->getActionName();
+    $allowed = $acl->isAllowed($role, $controller, $action);
+    return true;
+    /*
+    if ($allowed != PhAcl::ALLOW) {
+      $this->flash->error("On carefull consideration we have found that you do not have access");
+      $dispatcher->forward(
+        array(
+          'controller' => 'index',
+          'action'     => 'index'
+        )
+      );
 
-        $acl = $this->getAcl();
-
-        $allowed = $acl->isAllowed($role, $controller, $action);
-        if ($allowed != PhAcl::ALLOW)
-        {
-            $this->flash->error("You don't have access to this module");
-            $dispatcher->forward(
-                array(
-                    'controller' => 'index',
-                    'action' => 'index'
-                )
-            );
-            return false;
-        }
-
+      return false;
     }
+    */
+
+  }
 
 }
