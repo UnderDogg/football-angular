@@ -23,19 +23,24 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS `awards` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `episode_id` int(11) unsigned NOT NULL,
-  `user_id` int(11) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
   `player_id` int(10) unsigned NOT NULL,
   `award` int(1) NOT NULL DEFAULT '0',
   `created_at` datetime DEFAULT NULL,
-  `created_at_user_id` int(11) DEFAULT NULL,
+  `created_at_user_id` int(10) NOT NULL,
   `last_update` datetime DEFAULT NULL,
-  `last_update_user_id` int(11) DEFAULT NULL,
+  `last_update_user_id` int(10) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `episode_id` (`episode_id`),
   KEY `player_id` (`player_id`),
-  KEY `award` (`award`)
+  KEY `award` (`award`),
+  key `created_at_user_id` (`created_at_user_id`),
+  key `last_update_user_id` (`last_update_user_id`)  
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+ALTER TABLE `awards` ADD CONSTRAINT `fk_awards_users` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `awards` ADD CONSTRAINT `fk_awards_players` FOREIGN KEY (`player_id`) REFERENCES `players`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- --------------------------------------------------------
 

@@ -2,3 +2,4 @@
 app/var/logs/*
 app/var/cache/*
 app/var/volt/*
+/app/var/config/config.ini

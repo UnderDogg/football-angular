@@ -33,9 +33,10 @@ Please change the username and password on the line above to meet your requireme
 
 ### Schema
 
+Database is in /schemas
 You can import the schema using the following command:
 
-    mysql -u root -p hhf < app/schema/schema.sql
+    mysql -u root -p hhf < schemas/schema.sql
 
 Make sure the path of the schema file matches your setup.
 
