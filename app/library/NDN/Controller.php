@@ -49,11 +49,11 @@ class Controller extends \Phalcon\Mvc\Controller
   protected function constructMenu($controller) {
     $commonMenu = array(
       'index'    => 'Home',
-      'awards'   => 'Awards',
+      'artists'  => 'Artists',
+      'albums'   => 'Albums',
+      'charts'    => 'Charts',
       'players'  => 'Players',
       'episodes' => 'Episodes',
-      'about'    => 'About',
-      'contact'  => 'Contact Us',
     );
 
     $session = $this->getDi()->getShared('session');

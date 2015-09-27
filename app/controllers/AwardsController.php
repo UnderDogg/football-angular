@@ -62,7 +62,7 @@ class AwardsController extends \NDN\Controller
       $allPlayers = Players::find(array('order' => 'active DESC, name'));
 
       $this->view->setVar('users', $allUsers);
-      $this->view->setVar('episodes', $allEpisodes);
+      $this->view->setVar('awards', $allEpisodes);
       $this->view->setVar('players', $allPlayers);
 
       if ($this->request->isPost()) {
@@ -71,7 +71,7 @@ class AwardsController extends \NDN\Controller
 
         $award = new Awards();
         $award->userId = $this->request->getPost('user_id', 'int');
-        $award->episodeId = $this->request->getPost('episode_id', 'int');
+        $award->awardId = $this->request->getPost('award_id', 'int');
         $award->playerId = $this->request->getPost('player_id', 'int');
         $award->award = $this->request->getPost('award', 'int');
 
@@ -97,83 +97,32 @@ class AwardsController extends \NDN\Controller
   public function getAction($action = 0, $limit = null) {
     $this->view->setRenderLevel(View::LEVEL_LAYOUT);
 
-    $sql = 'SELECT COUNT(Awards.id) AS total, Players.name AS player_name, Awards.award '
-      . 'FROM Awards '
-      . 'INNER JOIN Players '
-      . 'WHERE Awards.award = %s ';
+    $data = '';
+    $results = $this->cache->get($this->getCacheHash('model'));
 
-    switch ($action) {
-      case 1:
-        $sql .= 'AND Players.active = 1 ';
-        break;
-      case 2:
-      case 3:
-      case 4:
-        $sql .= 'AND Awards.user_id = ' . (int)$action . ' ';
-        break;
-    }
+    if (!$results) {
 
-    $sql .= 'GROUP BY Awards.award, Awards.player_id '
-      . 'ORDER BY Awards.award ASC, total DESC, Players.name ';
+      $awards = Awards::find();
 
-    if (!empty($limit)) {
-      $sql .= 'LIMIT ' . (int)$limit;
-    }
-
-    // Do some data caching based on the query that was sent to us
-    $hash = $this->getCacheHash('model', sha1($sql));
-    $result = $this->cache->get($hash);
-
-    // If $result is null then the content will be created or will refreshed
-    if ($result === null) {
-
-      // Kicks
-      $kickSql = sprintf($sql, -1);
-      $query = $this->modelsManager->createQuery($kickSql);
-      $result = $query->execute();
-
-      $kicks = array();
-      $kicksMax = 0;
-
-      foreach ($result as $item) {
-        $kicksMax = (0 == $kicksMax) ? $item->total : $kicksMax;
-        $name = $item->player_name;
-        $kicks[] = array(
-          'total'   => (int)$item->total,
-          'name'    => $name,
-          'percent' => (int)($item->total * 100 / $kicksMax),
-        );
+      if (count($awards) > 0) {
+        foreach ($awards as $award) {
+          $data[] = array(
+            'id'       => $award->id,
+            'total'   => (int) $award->total,
+            'name'    => $award->name,
+            'percent' => (int) ($award->total * 100 / 100),
+          );
+        }
       }
 
-      // Game balls
-      $gameSql = sprintf($sql, 1);
-      $query = $this->modelsManager->createQuery($gameSql);
-      $result = $query->execute();
+      $results = json_encode(array('results' => $awards));
 
-      $gameballs = array();
-      $gameballsMax = 0;
+      //$results = json_encode(array('results' => $data));
 
-      foreach ($result as $item) {
-        $gameballsMax = (0 == $gameballsMax) ?
-          $item->total :
-          $gameballsMax;
-        $name = $item->player_name;
-        $gameballs[] = array(
-          'total'   => (int)$item->total,
-          'name'    => $name,
-          'percent' => (int)($item->total * 100 / $gameballsMax),
-        );
-      }
-
-      $result = json_encode(
-        array('gameballs' => $gameballs, 'kicks' => $kicks)
-      );
-
-      // Store it in the cache
-      $this->cache->save($hash, $result);
+      $this->cache->save($this->getCacheHash('model'), $results);
     }
 
-    echo $result;
+    echo $results;
   }
 
   /**
