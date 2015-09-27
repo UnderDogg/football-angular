@@ -23,6 +23,13 @@ extension must also be enabled.
 
 Download or clone the application and upload it to your web server.
 
+## Directories
+Make sure you have created / made writable the following directories:
+- /app/var/cache
+- /app/var/logs
+- /app/var/metadata
+- /app/var/volt
+
 ### Database Setup
 
     echo "CREATE DATABASE hhf CHARACTER SET utf8 COLLATE utf8_general_ci;" |mysql -u root -p
